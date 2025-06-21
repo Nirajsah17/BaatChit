@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+    restart: unless-stopped
+    
+  # Development services
+  client-dev:
+    build:
+      context: .
+      target: client-build
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app/client
+      - /app/client/node_modules
+    command: npm run dev
+    environment:
+      - NODE_ENV=development
+    profiles:
+      - dev
+
+  server-dev:
+    build:
+      context: ./server
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    command: npm run dev
+    environment:
+      - NODE_ENV=development
+    profiles:
+      - dev
